@@ -1,7 +1,7 @@
 {
   "name": "eez-flow-ext-postgres",
   "displayName": "EEZ-Flow postgres extension",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Envox",
 
   "repository": "https://github.com/eez-open/eez-flow-ext-postgres",
