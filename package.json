@@ -3,10 +3,13 @@
   "displayName": "EEZ-Flow postgres extension",
   "version": "0.0.1",
   "author": "Envox",
+
+  "repository": "https://github.com/eez-open/eez-flow-ext-postgres",
   "license": "GPL-3.0-only",
   "main": "dist/index.js",
   "scripts": {
-    "build": "cd src && tsc"
+    "build": "cd src && tsc",
+    "publish": "npm publish ."
   },
   "keywords": [
     "eez-studio",
