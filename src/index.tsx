@@ -195,9 +195,9 @@ const extension = {
                 };            
             }
 
-            @mobx.computed get inputs() {
+            getInputs() {
                 return [
-                    ...super.inputs,
+                    ...super.getInputs(),
                     ...PostgresActionComponent.parse(this.sql).inputs.map(input => ({
                         name: input,
                         displayName: input,
@@ -206,9 +206,9 @@ const extension = {
                 ];
             }
 
-            @mobx.computed get outputs() {
+            getOutputs() {
                 return [
-                    ...super.outputs,
+                    ...super.getOutputs(),
                     {
                         name: "result",
                         type: PropertyType.Any
