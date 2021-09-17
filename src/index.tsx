@@ -6,7 +6,7 @@ const extension = {
         const {
             React,
             mobx,
-            styled,
+            theme,
             registerClass,
             makeDerivedClassInfo,
             ActionComponent,
@@ -90,14 +90,6 @@ const extension = {
         registerClass(PostgresConnectionActionComponent);
 
         ////////////////////////////////////////////////////////////////////////////////
-
-        const PostgresDiv = styled.div`
-            padding-top: 0 !important;
-            & > div:first-child {
-                white-space: nowrap;
-                border-bottom: 1px solid ${props => props.theme.borderColor};
-            }
-        `;
 
         class PostgresActionComponent extends ActionComponent {
             static classInfo = makeDerivedClassInfo(ActionComponent.classInfo, {
@@ -271,9 +263,12 @@ const extension = {
 
             getBody(flowContext: IFlowContext): React.ReactNode {
                 return (
-                    <PostgresDiv className="body">
-                        <pre>{this.sql}</pre>
-                    </PostgresDiv>
+                    <div className="body" style={{paddingTop: 0}}>
+                        <pre style={{
+                            whiteSpace: "nowrap",
+                            borderBottom: `1px solid ${theme.borderColor}`
+                        }}>{this.sql}</pre>
+                    </div>
                 );
             }
         }
