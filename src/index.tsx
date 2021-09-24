@@ -6,7 +6,6 @@ const extension = {
         const {
             React,
             mobx,
-            theme,
             registerClass,
             makeDerivedClassInfo,
             ActionComponent,
@@ -263,11 +262,8 @@ const extension = {
 
             getBody(flowContext: IFlowContext): React.ReactNode {
                 return (
-                    <div className="body" style={{paddingTop: 0}}>
-                        <pre style={{
-                            whiteSpace: "nowrap",
-                            borderBottom: `1px solid ${theme.borderColor}`
-                        }}>{this.sql}</pre>
+                    <div className="body">
+                        <pre>{this.sql}</pre>
                     </div>
                 );
             }
