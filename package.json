@@ -1,33 +1,38 @@
 {
-  "name": "eez-flow-ext-postgres",
-  "displayName": "EEZ-Flow postgres extension",
-  "version": "0.0.8",
-  "author": "Envox",
-  "repository": "https://github.com/eez-open/eez-flow-ext-postgres",
-  "license": "GPL-3.0-only",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "cd src && tsc",
-    "watch": "cd src && tsc -w",
-    "publish": "npm publish ."
-  },
-  "keywords": [
-    "eez-studio",
-    "eez-flow"
-  ],
-  "dependencies": {
-    "pg": "latest"
-  },
-  "devDependencies": {
-    "@types/pg": "^7.14.11",
-    "@types/react": "^17.0.3",
-    "@types/styled-components": "^5.1.9",
-    "eez-studio-types": "0.0.34",
-    "mobx": "^6.1.8"
-  },
-  "eez-studio": {
-    "node-module": true
-  },
-  "image": "image.png",
-  "description": ""
+    "name": "eez-flow-ext-postgres",
+    "displayName": "EEZ-Flow postgres extension",
+    "version": "0.0.9",
+    "author": "Envox",
+    "repository": "https://github.com/eez-open/eez-flow-ext-postgres",
+    "license": "GPL-3.0-only",
+    "main": "dist/index.js",
+    "scripts": {
+        "build": "cd src && tsc",
+        "watch": "cd src && tsc -w",
+        "publish": "npm publish ."
+    },
+    "keywords": [
+        "eez-studio",
+        "eez-flow"
+    ],
+    "dependencies": {
+        "pg": "latest"
+    },
+    "devDependencies": {
+        "@types/pg": "^7.14.11",
+        "@types/react": "^17.0.3",
+        "eez-studio-types": "0.0.37",
+        "mobx": "^6.1.8"
+    },
+    "eez-studio": {
+        "node-module": true
+    },
+    "image": "image.png",
+    "description": "",
+    "prettier": {
+        "printWidth": 80,
+        "tabWidth": 4,
+        "trailingComma": "none",
+        "arrowParens": "avoid"
+    }
 }
