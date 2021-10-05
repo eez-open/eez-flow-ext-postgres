@@ -18,12 +18,10 @@ const extension = {
             makeDerivedClassInfo,
             ActionComponent,
             VariableType,
-            getFlow,
             showGenericDialog,
             validators,
             propertyGridGroups: { specificGroup },
-            RenderVariableStatus,
-            evalExpression
+            RenderVariableStatus
         } = eezStudio;
 
         const POSTGRESQL_ICON = (
@@ -54,59 +52,7 @@ const extension = {
                     }
                 ],
                 icon: POSTGRESQL_ICON,
-                componentHeaderColor: "#FFCC66",
-                updateObjectValueHook: (
-                    object: PostgresActionComponent,
-                    values: any
-                ) => {
-                    if (values.sql) {
-                        const { inputs: inputsBefore, outputs: outputsBefore } =
-                            PostgresActionComponent.parse(object.sql);
-
-                        const { inputs: inputsAfter, outputs: outputsAfter } =
-                            PostgresActionComponent.parse(values.sql);
-
-                        const flow = getFlow(object);
-
-                        inputsBefore.forEach((inputBefore, i) => {
-                            if (inputsAfter.indexOf(inputBefore) === -1) {
-                                if (
-                                    inputsBefore.length === inputsAfter.length
-                                ) {
-                                    flow.rerouteConnectionLinesInput(
-                                        object,
-                                        inputBefore,
-                                        inputsAfter[i]
-                                    );
-                                } else {
-                                    flow.deleteConnectionLinesToInput(
-                                        object,
-                                        inputBefore
-                                    );
-                                }
-                            }
-                        });
-
-                        outputsBefore.forEach((outputBefore, i) => {
-                            if (outputsAfter.indexOf(outputBefore) === -1) {
-                                if (
-                                    outputsBefore.length === outputsAfter.length
-                                ) {
-                                    flow.rerouteConnectionLinesOutput(
-                                        object,
-                                        outputBefore,
-                                        outputsAfter[i]
-                                    );
-                                } else {
-                                    flow.deleteConnectionLinesFromOutput(
-                                        object,
-                                        outputBefore
-                                    );
-                                }
-                            }
-                        });
-                    }
-                }
+                componentHeaderColor: "#FFCC66"
             });
 
             @mobx.observable connection: string;
@@ -140,19 +86,6 @@ const extension = {
                 };
             }
 
-            getInputs() {
-                return [
-                    ...super.getInputs(),
-                    ...PostgresActionComponent.parse(this.sql).inputs.map(
-                        input => ({
-                            name: input,
-                            displayName: input,
-                            type: PropertyType.Any
-                        })
-                    )
-                ];
-            }
-
             getOutputs() {
                 return [
                     ...super.getOutputs(),
@@ -163,31 +96,27 @@ const extension = {
                 ];
             }
 
-            expandSqlParams(runningFlow: IFlowState) {
+            expandSqlParams(flowState: IFlowState) {
                 let sql = this.sql;
 
-                PostgresActionComponent.parse(sql).inputs.forEach(input => {
-                    const inputPropertyValue =
-                        runningFlow.getInputPropertyValue(this, input);
-                    if (
-                        inputPropertyValue &&
-                        inputPropertyValue.value != undefined
-                    ) {
-                        sql = sql.replace(
-                            new RegExp(`\{${input}\}`, "g"),
-                            inputPropertyValue.value
+                PostgresActionComponent.parse(sql).inputs.forEach(
+                    expression => {
+                        const value = flowState.evalExpression(
+                            this,
+                            expression
                         );
-                    } else {
-                        throw `missing postgres parameter ${input}`;
+                        sql = sql.replace(
+                            new RegExp(`\{${expression}\}`, "g"),
+                            value
+                        );
                     }
-                });
+                );
 
                 return sql;
             }
 
             async execute(flowState: IFlowState) {
-                const postgreSQLConnection = evalExpression(
-                    flowState,
+                const postgreSQLConnection = flowState.evalExpression(
                     this,
                     this.connection
                 ) as PostgreSQLConnection | null;
@@ -199,9 +128,13 @@ const extension = {
                     throw `"${this.connection}" is not PostgreSQLConnection`;
                 }
 
+                if (!postgreSQLConnection.isConnected) {
+                    throw `"${this.connection}" is not connected`;
+                }
+
                 let connection = postgreSQLConnection;
                 if (connection.ssl) {
-                    connection = Object.assign(connection, {
+                    connection = Object.assign({}, connection, {
                         ssl: {
                             rejectUnauthorized: false
                         }
@@ -270,7 +203,7 @@ const extension = {
             }
 
             async check() {
-                let connection = Object.assign(this, {
+                let connection = Object.assign({}, this, {
                     connectionTimeoutMillis: 5000
                 });
 
@@ -376,6 +309,7 @@ const extension = {
 
                 const postgreSQLConnection = new PostgreSQLConnection();
                 Object.assign(postgreSQLConnection, result.values);
+                await postgreSQLConnection.check();
                 return postgreSQLConnection;
             } catch (err) {
                 return null;
@@ -392,7 +326,7 @@ const extension = {
                     if (value) {
                         const postgreSQLConnection = new PostgreSQLConnection();
                         Object.assign(postgreSQLConnection, value);
-                        postgreSQLConnection.check();
+                        await postgreSQLConnection.check();
                         return postgreSQLConnection;
                     }
                     return null;
