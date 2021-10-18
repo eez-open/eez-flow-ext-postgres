@@ -5,7 +5,10 @@ import {
     PropertyType,
     IDataContext,
     IVariable,
-    GenericDialogResult
+    GenericDialogResult,
+    ValueType,
+    ComponentInput,
+    ComponentOutput
 } from "eez-studio-types";
 import pg from "pg";
 
@@ -16,8 +19,9 @@ const extension = {
             mobx,
             registerClass,
             makeDerivedClassInfo,
+            makeExpressionProperty,
             ActionComponent,
-            VariableType,
+            ObjectType,
             showGenericDialog,
             validators,
             propertyGridGroups: { specificGroup },
@@ -39,11 +43,14 @@ const extension = {
         class PostgresActionComponent extends ActionComponent {
             static classInfo = makeDerivedClassInfo(ActionComponent.classInfo, {
                 properties: [
-                    {
-                        name: "connection",
-                        type: PropertyType.String,
-                        propertyGridGroup: specificGroup
-                    },
+                    makeExpressionProperty(
+                        {
+                            name: "connection",
+                            type: PropertyType.String,
+                            propertyGridGroup: specificGroup
+                        },
+                        "object:PostgreSQLConnection"
+                    ),
                     {
                         name: "sql",
                         displayName: "SQL",
@@ -86,12 +93,32 @@ const extension = {
                 };
             }
 
-            getOutputs() {
+            getInputs(): ComponentInput[] {
+                return [
+                    ...super.getInputs(),
+                    {
+                        name: "@seqin",
+                        type: "null" as ValueType,
+                        isSequenceInput: true,
+                        isOptionalInput: true
+                    }
+                ];
+            }
+
+            getOutputs(): ComponentOutput[] {
                 return [
                     ...super.getOutputs(),
                     {
+                        name: "@seqout",
+                        type: "null" as ValueType,
+                        isSequenceOutput: true,
+                        isOptionalOutput: true
+                    },
+                    {
                         name: "result",
-                        type: PropertyType.Any
+                        type: "any",
+                        isSequenceOutput: false,
+                        isOptionalOutput: false
                     }
                 ];
             }
@@ -316,13 +343,13 @@ const extension = {
             }
         }
 
-        class PostgreSQLConnectionVariableType extends VariableType {
-            static classInfo = makeDerivedClassInfo(VariableType.classInfo, {
+        class PostgreSQLConnectionVariableType extends ObjectType {
+            static classInfo = makeDerivedClassInfo(ObjectType.classInfo, {
                 properties: [],
-                onVariableConstructor: async (variable: IVariable) => {
+                onObjectVariableConstructor: async (variable: IVariable) => {
                     return await showConnectDialog(variable, {});
                 },
-                onVariableLoad: async (value: any) => {
+                onObjectVariableLoad: async (value: any) => {
                     if (value) {
                         const postgreSQLConnection = new PostgreSQLConnection();
                         Object.assign(postgreSQLConnection, value);
@@ -331,7 +358,9 @@ const extension = {
                     }
                     return null;
                 },
-                onVariableSave: async (value: PostgreSQLConnection | null) => {
+                onObjectVariableSave: async (
+                    value: PostgreSQLConnection | null
+                ) => {
                     return value
                         ? {
                               host: value.host,
@@ -343,7 +372,7 @@ const extension = {
                           }
                         : null;
                 },
-                renderVariableStatus: (
+                renderObjectVariableStatus: (
                     variable: IVariable,
                     dataContext: IDataContext
                 ) => {
