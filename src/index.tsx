@@ -46,7 +46,7 @@ const extension = {
                     makeExpressionProperty(
                         {
                             name: "connection",
-                            type: PropertyType.String,
+                            type: PropertyType.MultilineText,
                             propertyGridGroup: specificGroup
                         },
                         "object:PostgreSQLConnection"
@@ -55,7 +55,8 @@ const extension = {
                         name: "sql",
                         displayName: "SQL",
                         type: PropertyType.MultilineText,
-                        propertyGridGroup: specificGroup
+                        propertyGridGroup: specificGroup,
+                        monospaceFont: true
                     }
                 ],
                 icon: POSTGRESQL_ICON,
@@ -193,7 +194,12 @@ const extension = {
 
                 await client.end();
 
-                flowState.propagateValue(this, "result", res);
+                flowState.runtime.propagateValue(
+                    flowState,
+                    this,
+                    "result",
+                    res
+                );
 
                 return undefined;
             }
