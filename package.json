@@ -1,11 +1,11 @@
 {
     "name": "eez-flow-ext-postgres",
     "displayName": "EEZ-Flow postgres extension",
-    "version": "0.1.17",
+    "version": "0.1.19",
     "author": "Envox",
     "repository": "https://github.com/eez-open/eez-flow-ext-postgres",
     "license": "GPL-3.0-only",
-    "main": "dist/index.js",
+    "main": "dist/editor.js",
     "scripts": {
         "build": "cd src && tsc",
         "watch": "cd src && tsc -w",
@@ -23,7 +23,8 @@
         "eez-studio-types": "latest"
     },
     "eez-studio": {
-        "node-module": true
+        "node-module": true,
+        "runtime": "dist/runtime.js"
     },
     "image": "image.png",
     "description": "",
