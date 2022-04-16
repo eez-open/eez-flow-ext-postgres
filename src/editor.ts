@@ -45,16 +45,10 @@ export default {
                     name: "sql",
                     displayName: "SQL",
                     type: "template-literal"
-                },
-                {
-                    name: "storeResultInto",
-                    type: "assignable-expression",
-                    valueType: "any"
                 }
             ],
 
             defaults: {
-                storeResultInto: "result",
                 customOutputs: [
                     {
                         name: "result",

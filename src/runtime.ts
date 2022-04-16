@@ -55,6 +55,7 @@ export default {
                         const client = new pg.Client(config);
                         await client.connect();
                         const res = await client.query(sql);
+                        await client.end();
 
                         context.propagateValue("result", res?.rows ?? []);
                         context.propagateValueThroughSeqout();
