@@ -34,6 +34,10 @@ export default {
                     return;
                 }
 
+                if (context.logInfo) {
+                    context.logInfo(sql);
+                }
+
                 context = context.startAsyncExecution();
 
                 (async () => {
