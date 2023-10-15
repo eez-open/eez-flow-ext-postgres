@@ -6,7 +6,8 @@ import {
     IActionComponent,
     IDashboardComponentContext
 } from "eez-studio-types";
-import pg from "pg";
+
+import type { ClientConfig } from "pg";
 
 export default {
     eezFlowExtensionInit: (eezFlowEditor: IEezFlowEditor) => {
@@ -106,7 +107,7 @@ export default {
                 context = context.startAsyncExecution();
 
                 (async () => {
-                    const config: pg.ClientConfig = {
+                    const config: ClientConfig = {
                         host: connection.host,
                         port: connection.port,
                         user: connection.user,
@@ -120,8 +121,9 @@ export default {
                         };
                     }
 
+                    const pg = await import("pg");
+                    const client = new pg.default.Client(config);
                     try {
-                        const client = new pg.Client(config);
                         await client.connect();
                         const res = await client.query(sql);
                         await client.end();
@@ -131,6 +133,8 @@ export default {
                     } catch (err) {
                         console.error(err);
                         context.throwError(err.toString());
+                    } finally {
+                        await client.end();
                     }
 
                     context.endAsyncExecution();
@@ -171,6 +175,7 @@ export default {
                 }
 
                 try {
+                    const pg = await import("pg");
                     const client = new pg.Client(connection);
                     await client.connect();
                     await client.end();
